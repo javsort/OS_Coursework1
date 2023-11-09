@@ -1,0 +1,4 @@
+cd target/
+java 
+cd ..
+```
