@@ -1,9 +1,9 @@
-package src;
+package src.RobotParts;
 
 import java.util.Random;  
 // Expected output: Task
 
-public class Sensor {
+public class Sensor implements Runnable {
     public int id;
     private double lambda = 2;
     private double complexity; 
@@ -11,7 +11,7 @@ public class Sensor {
     private double minComplexity = 0.1;
     private double maxComplexity = 0.5;
 
-    public Sensor(int ID, double lam){
+    public Sensor(double lam){
         id = ID;
         lambda = lam;
         complexity = 0;
@@ -19,12 +19,20 @@ public class Sensor {
 
     }
 
-    public double getPoissonNum(double lambda){
-        int k = 10;
+    public void run(){
 
+    }
+
+    public double getPoissonNum(double lambda){
+        // Random object to find k number of tasks
+        Random r = new Random();
+        int k = r.nextInt();
+    
+        // Set numerator and denominator
         double numerator = Math.pow(lambda, k) * Math.exp(-lambda);
         double denominator = factorial(k);
 
+        // Make final division
         double poissonValue = numerator / denominator;
         
         return poissonValue;

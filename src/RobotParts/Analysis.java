@@ -1,9 +1,9 @@
-package src;
+package src.RobotParts;
 
 import java.lang.Math;
 // Expected behaviour - receive Task as input and then produce analysis of Y
 // Expected output: result
-public class Analysis {
+public class Analysis implements Runnable {
     private double analysisY;
     private String id;
     private int complexity;
@@ -27,5 +27,17 @@ public class Analysis {
 
     public void sendResult(){
         Actuator result = new Actuator(id,  complexity, analysisY);
+    }
+
+    protected class Result {
+        private String id;
+        private int complexity;
+        private double analysisY;
+
+        public Result(String ID, int compl, double aY){
+            id = ID;
+            complexity = compl;
+            analysisY = aY;
+        }
     }
 }
