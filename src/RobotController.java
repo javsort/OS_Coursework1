@@ -49,12 +49,13 @@ public class RobotController {
                     break;
             
                 case 2:
-
+                    //robot.workflow = new ThreeSensors();
                     break;
             }
 
             System.out.println("Robot is: " + robot.workflow.name());
             robot.workflow.init();
+            
             robot.workflow.go();
         }
     }

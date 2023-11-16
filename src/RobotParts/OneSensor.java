@@ -3,25 +3,61 @@ package src.RobotParts;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.*;
 
 import src.Workflow;
 
 public class OneSensor implements Workflow {
     public double lambda = 0;
     public double position = -1.0;
+    
     BufferedReader dataBuffer = new BufferedReader(new InputStreamReader(System.in));
     String dataLine = "";
+
+    Sensor sensor;
+    Analysis analysis;
+    Actuator actuator;
+
+    Thread sensorThread;
+    Thread analysisThread;
+    Thread actuatorThread;
+
+    BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
+    BlockingQueue<Task> resultsQueue = new LinkedBlockingQueue<>();
+
     
     public String name() {
         return ("running with one sensor.");
     }
 
     public void init() {
+        enterValues();
+        sensor = new Sensor(lambda, taskQueue);
+        analysis = new Analysis(taskQueue, resultsQueue);
+        actuator = new Actuator(resultsQueue, position);
 
+        sensorThread = new Thread(sensor);
+        analysisThread = new Thread(analysis); 
+        actuatorThread = new Thread(actuator);
     }
 
     public void go(){
-        enterValues();
+        sensorThread.start();
+        analysisThread.start();
+        actuatorThread.start();
+
+        try {Thread.sleep(10000);} catch (InterruptedException e) {}
+
+        sensorThread.interrupt();
+        analysisThread.interrupt();
+        actuatorThread.interrupt();
+        
+        System.out.println("Robot has stopped moving at: " + actuator.getPosition());
+
+    }
+
+    public double getLambda(){
+        return lambda;
     }
     
     public void enterValues(){

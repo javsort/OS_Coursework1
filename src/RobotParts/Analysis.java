@@ -1,43 +1,46 @@
 package src.RobotParts;
 
 import java.lang.Math;
+import java.util.concurrent.BlockingQueue;
 // Expected behaviour - receive Task as input and then produce analysis of Y
 // Expected output: result
 public class Analysis implements Runnable {
-    private double analysisY;
-    private String id;
-    private int complexity;
 
-    public Analysis(String ID, int compl){
-        id = ID;
-        complexity = compl;
-        analysisY = 0;
 
+    Task currentTask;
+    private final BlockingQueue<Task> taskQueue;
+    private final BlockingQueue<Task> resultsQueue;
+
+    public Analysis(BlockingQueue<Task> taskQueue, BlockingQueue<Task> resultsQueue){
+        this.taskQueue = taskQueue;
+        this.resultsQueue = resultsQueue;
     }
 
+    @Override
     public void run(){
-        analysisY();
-        sendResult();
+        System.out.println("Analysis started");
+        while(!Thread.currentThread().isInterrupted()){
+            try {
+                currentTask = taskQueue.take();
+                
+                currentTask.setYResult(analysisY(currentTask.getComplexity()));
+
+                int sleepTime = (int) (currentTask.getComplexity() * 1000);
+                Thread.sleep(sleepTime);
+
+                resultsQueue.add(currentTask);
+
+            } catch (InterruptedException e) {
+                System.out.println("Analysis error: no tasks to analyse. Last task analysed {"+ currentTask.getId() +"} ");
+            }
+        }
+
+        
     }
     
+    public double analysisY(double c){
+        double analysisY = Math.sqrt((1 / c));
 
-    private void analysisY(){
-        analysisY = Math.sqrt((1 / complexity));
-    }
-
-    public void sendResult(){
-        Actuator result = new Actuator(id,  complexity, analysisY);
-    }
-
-    protected class Result {
-        private String id;
-        private int complexity;
-        private double analysisY;
-
-        public Result(String ID, int compl, double aY){
-            id = ID;
-            complexity = compl;
-            analysisY = aY;
-        }
+        return analysisY;
     }
 }
