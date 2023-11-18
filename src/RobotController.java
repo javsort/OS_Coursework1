@@ -6,8 +6,8 @@ import src.RobotParts.OneSensor;
 import src.RobotParts.MultipleSensors;
 
 public class RobotController {
-
     Workflow workflow;
+
     public static void main(String[] args) {
         Integer selectedOption = 0;
         BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));

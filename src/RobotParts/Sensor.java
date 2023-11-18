@@ -1,7 +1,6 @@
 package src.RobotParts;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import src.RobotParts.OneSensor.UpgradedQueue;
 import java.util.Random;  
 
 // Expected output: Task
@@ -10,6 +9,7 @@ public class Sensor implements Runnable {
     private double maxComplexity = 0.5;
     private double lambda;
     private int sensorId;
+
     private static AtomicInteger sensorID = new AtomicInteger();
     
 
@@ -25,7 +25,7 @@ public class Sensor implements Runnable {
 
     @Override
     public void run(){
-        System.out.println("Sensor started");
+        System.out.println("Sensor "+ sensorId +" started");
         Task.resetId();
 
         while(!Thread.currentThread().isInterrupted()){
@@ -34,12 +34,13 @@ public class Sensor implements Runnable {
                 for(int i = 0; i < getPoissonNum(lambda); i++){
 
                     if(taskQueue.isFull()){
-                        System.out.println("Sensor error: Task queue is full. Last task added {"+ currentTask.getId() +"}");
+                        System.out.println("Sensor "+ sensorId + " error: Task queue is full. Last task added {"+ currentTask.getId() +"}");
                         continue;
                     }
 
                     double complexity = newComplexity();
                     currentTask = new Task(complexity);
+                    currentTask.setSensorId(sensorId);
                     taskQueue.put(currentTask);
 
                 }
@@ -48,7 +49,7 @@ public class Sensor implements Runnable {
 
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
-                System.out.println("Sensor error: No more tasks to be added. Last task added {"+ currentTask.getId() +"}");
+                System.out.println("Sensor "+ sensorId + " error: No more tasks to be added. Last task added {"+ currentTask.getId() +"}");
             }
         }
         currentTask = new Task(newComplexity());
@@ -81,7 +82,7 @@ public class Sensor implements Runnable {
         return sensorId;
     }
     
-    public void resetSensorId(){
+    public static void resetId(){
         sensorID.set(0);
     }
 

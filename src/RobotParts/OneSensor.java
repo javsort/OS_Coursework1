@@ -3,7 +3,6 @@ package src.RobotParts;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
 
 import src.Workflow;
 
@@ -27,27 +26,32 @@ public class OneSensor implements Workflow {
     UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(1000);
     UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(1000);
     
+    @Override
     public String name() {
-        return ("running with one sensor.");
+        return "running with one sensor.";
     }
 
+    @Override
     public void init() {
         enterValues();
+        Sensor.resetId();
+        
         sensor = new Sensor(lambda, taskQueue);
         analysis = new Analysis(taskQueue, resultsQueue);
-        actuator = new Actuator(resultsQueue, position);
+        actuator = new Actuator(resultsQueue, position, 1);
 
         sensorThread = new Thread(sensor);
         analysisThread = new Thread(analysis); 
         actuatorThread = new Thread(actuator);
     }
 
+    @Override
     public void go(){
         sensorThread.start();
         analysisThread.start();
         actuatorThread.start();
 
-        try {Thread.sleep(30000);
+        try {Thread.sleep(10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -95,16 +99,19 @@ public class OneSensor implements Workflow {
     }
     
     public void enterValues(){
-        boolean lambdaset = false;
 
-        while(!lambdaset){
+        while(lambda <= 0){
             System.out.print("Please enter a value for lambda: ");
             try {
                 dataLine = dataBuffer.readLine();
                 System.out.println();
                 lambda = Double.parseDouble(dataLine);
+
+                if(lambda <= 0) {
+                    throw new NumberFormatException();
+                }
+
                 System.out.println("Lambda is: " + lambda);
-                lambdaset = true;
 
             } catch (NumberFormatException e) {
                 System.out.println("'" + dataLine + "' is not recognized, please input a number." );
@@ -136,50 +143,5 @@ public class OneSensor implements Workflow {
                 System.out.println("IOException, quitting...");
             }
         }
-    }
-
-    public class UpgradedQueue<Task> {
-        private Queue<Task> queue = new LinkedList<>();
-        private int limit;
-
-        public UpgradedQueue(int limit){
-            this.limit = limit;
-        }
-
-        public synchronized void put(Task t) throws InterruptedException {
-            while(queue.size() == limit){
-                System.out.println("Queue is full!!!");
-                wait();
-            }
-
-            queue.add(t);
-            notify();
-        }
-
-        public synchronized Task take() throws InterruptedException {
-            while(queue.isEmpty()){
-                wait();
-            }
-            Task requestedTask = queue.poll();
-            notify();
-            return requestedTask;
-        }
-
-        public synchronized void clear(){
-            queue.clear();
-        }
-
-        public synchronized int size(){
-            return queue.size();
-        }
-
-        public boolean isEmpty(){
-            return queue.isEmpty();
-        }
-
-        public boolean isFull(){
-            return queue.size() == limit;
-        }
-
     }
 }

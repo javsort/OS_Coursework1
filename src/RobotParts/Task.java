@@ -6,6 +6,7 @@ public class Task {
     private int id;
     private double complexity;
     private double YResult;
+    private int sensorId;
 
     private static AtomicInteger newId = new AtomicInteger();
 
@@ -13,6 +14,7 @@ public class Task {
         this.id = newId.getAndIncrement();
         this.complexity = complexity;
         this.YResult = 0;               // To be changed after passing through analysis
+        this.sensorId = 1;
     }
 
     public int getId(){
@@ -37,5 +39,13 @@ public class Task {
 
     public static void resetId(){
         newId.set(0);
+    }
+
+    public void setSensorId(int id){
+        sensorId = id;
+    }
+
+    public int getSensorId(){
+        return sensorId;
     }
 }
