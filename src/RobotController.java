@@ -14,9 +14,9 @@ public class RobotController {
         String line = "";
 
         while(true) {
-            System.out.println("\r\n==============================");
-            System.out.println("     Robot Controller Menu\nMenu inspired by James Stovold");
-            System.out.println("==============================\r\n");
+            System.out.println("\r\n==================================");
+            System.out.println("       Robot Controller Menu\n  Menu inspired by James Stovold");
+            System.out.println("==================================\r\n");
             System.out.println("1. Start with a single sensor");
             System.out.println("2. Start with multiple sensors");
             System.out.println("0. Exit");	
