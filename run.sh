@@ -1,4 +1,5 @@
+#!/bin/bash -e
+
 cd target/
-java 
+java src.RobotController
 cd ..
-```
