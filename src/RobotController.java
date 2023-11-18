@@ -2,10 +2,8 @@ package src;
 
 import java.io.*;
 
-import src.RobotParts.Actuator;
-import src.RobotParts.Analysis;
 import src.RobotParts.OneSensor;
-import src.RobotParts.Sensor;
+import src.RobotParts.MultipleSensors;
 
 public class RobotController {
 
@@ -20,7 +18,7 @@ public class RobotController {
             System.out.println("     Robot Controller Menu\nMenu inspired by James Stovold");
             System.out.println("==============================\r\n");
             System.out.println("1. Start with a single sensor");
-            System.out.println("2. Start with three sensors");
+            System.out.println("2. Start with multiple sensors");
             System.out.println("0. Exit");	
 
             System.out.print("Enter a number: ");
@@ -49,8 +47,12 @@ public class RobotController {
                     break;
             
                 case 2:
-                    //robot.workflow = new ThreeSensors();
+                    robot.workflow = new MultipleSensors();
                     break;
+                    
+                default:
+                    System.out.println("Not recognized. Shutting off now.");
+                    return;
             }
 
             System.out.println("Robot is: " + robot.workflow.name());

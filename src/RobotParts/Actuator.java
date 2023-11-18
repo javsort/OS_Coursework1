@@ -1,6 +1,6 @@
 package src.RobotParts;
 
-import java.util.concurrent.BlockingQueue;
+import src.RobotParts.OneSensor.UpgradedQueue;
 
 public class Actuator implements Runnable {
     private double prevPosition;
@@ -9,9 +9,9 @@ public class Actuator implements Runnable {
     private double position;
 
     Task currentTask;
-    private final BlockingQueue<Task> resultsQueue;
+    UpgradedQueue<Task> resultsQueue;
 
-    public Actuator(BlockingQueue<Task> resultsQueue, double position){
+    public Actuator(UpgradedQueue<Task> resultsQueue, double position){
         this.resultsQueue = resultsQueue;
         this.position = position;
     }
@@ -27,6 +27,7 @@ public class Actuator implements Runnable {
 
                 System.out.println("Robot moving. Task id {" + currentTask.getId() + "}, result {" + currentTask.getYResult() + "}, old position: {" + prevPosition + "}, new position: {" + position + "}.");
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 System.out.println("Actuate error: no results to process. Last task processed {"+ currentTask.getId() +"}");
             }
         }
@@ -51,5 +52,9 @@ public class Actuator implements Runnable {
 
     public double getPosition(){
         return position;
+    }
+
+    public int getLastTaskSent(){
+        return currentTask.getId();
     }
 }

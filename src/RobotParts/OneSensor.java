@@ -3,13 +3,15 @@ package src.RobotParts;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.*;
+import java.util.*;
 
 import src.Workflow;
 
 public class OneSensor implements Workflow {
     public double lambda = 0;
     public double position = -1.0;
+
+    public int lastTask;
     
     BufferedReader dataBuffer = new BufferedReader(new InputStreamReader(System.in));
     String dataLine = "";
@@ -22,9 +24,8 @@ public class OneSensor implements Workflow {
     Thread analysisThread;
     Thread actuatorThread;
 
-    BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
-    BlockingQueue<Task> resultsQueue = new LinkedBlockingQueue<>();
-
+    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(1000);
+    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(1000);
     
     public String name() {
         return ("running with one sensor.");
@@ -46,13 +47,46 @@ public class OneSensor implements Workflow {
         analysisThread.start();
         actuatorThread.start();
 
-        try {Thread.sleep(10000);} catch (InterruptedException e) {}
+        try {Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         sensorThread.interrupt();
+
+        try {
+            sensorThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        while(!taskQueue.isEmpty() || !resultsQueue.isEmpty()){
+            try {Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
         analysisThread.interrupt();
         actuatorThread.interrupt();
-        
-        System.out.println("Robot has stopped moving at: " + actuator.getPosition());
+
+        try {
+            analysisThread.join();
+            actuatorThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        /*while(true){
+            try {Thread.sleep(1000);} catch (InterruptedException e) {}
+            if(lastTask == actuator.getLastTaskSent()){
+                analysisThread.interrupt();
+                actuatorThread.interrupt();
+                break;
+            }
+        }*/
+
+        System.out.println("\nRobot has stopped moving at: " + actuator.getPosition());
 
     }
 
@@ -102,5 +136,50 @@ public class OneSensor implements Workflow {
                 System.out.println("IOException, quitting...");
             }
         }
+    }
+
+    public class UpgradedQueue<Task> {
+        private Queue<Task> queue = new LinkedList<>();
+        private int limit;
+
+        public UpgradedQueue(int limit){
+            this.limit = limit;
+        }
+
+        public synchronized void put(Task t) throws InterruptedException {
+            while(queue.size() == limit){
+                System.out.println("Queue is full!!!");
+                wait();
+            }
+
+            queue.add(t);
+            notify();
+        }
+
+        public synchronized Task take() throws InterruptedException {
+            while(queue.isEmpty()){
+                wait();
+            }
+            Task requestedTask = queue.poll();
+            notify();
+            return requestedTask;
+        }
+
+        public synchronized void clear(){
+            queue.clear();
+        }
+
+        public synchronized int size(){
+            return queue.size();
+        }
+
+        public boolean isEmpty(){
+            return queue.isEmpty();
+        }
+
+        public boolean isFull(){
+            return queue.size() == limit;
+        }
+
     }
 }

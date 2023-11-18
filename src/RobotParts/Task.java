@@ -34,4 +34,8 @@ public class Task {
     public double getYResult(){
         return YResult;
     }
+
+    public static void resetId(){
+        newId.set(0);
+    }
 }

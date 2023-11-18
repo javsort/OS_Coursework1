@@ -1,23 +1,24 @@
 package src.RobotParts;
 
-import java.util.concurrent.*;
-import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+import src.RobotParts.OneSensor.UpgradedQueue;
 import java.util.Random;  
-// Expected output: Task
 
+// Expected output: Task
 public class Sensor implements Runnable {
     private double minComplexity = 0.1;
     private double maxComplexity = 0.5;
     private double lambda;
-    private long sleepTime;
+    private int sensorId;
+    private static AtomicInteger sensorID = new AtomicInteger();
     
 
     Task currentTask;
-    private final BlockingQueue<Task> taskQueue;
-    private Queue<Task> remainingQueue;
+    private UpgradedQueue<Task> taskQueue;
 
 
-    public Sensor(double lambda, BlockingQueue<Task> taskQueue){
+    public Sensor(double lambda, UpgradedQueue<Task> taskQueue){
+        sensorId = sensorID.getAndIncrement();
         this.lambda = lambda;
         this.taskQueue = taskQueue;
     }
@@ -25,30 +26,32 @@ public class Sensor implements Runnable {
     @Override
     public void run(){
         System.out.println("Sensor started");
+        Task.resetId();
+
         while(!Thread.currentThread().isInterrupted()){
             try {
 
-                /*while(remainingQueue.size() != 0){
-                    taskQueue.add(remainingQueue.poll());
-                }*/
-
-                //System.out.println ("The amount of tasks is: " + taskAmount);
                 for(int i = 0; i < getPoissonNum(lambda); i++){
+
+                    if(taskQueue.isFull()){
+                        System.out.println("Sensor error: Task queue is full. Last task added {"+ currentTask.getId() +"}");
+                        continue;
+                    }
 
                     double complexity = newComplexity();
                     currentTask = new Task(complexity);
-                    taskQueue.add(currentTask);
+                    taskQueue.put(currentTask);
 
                 }
                 
                 Thread.sleep(1000);
 
             } catch (InterruptedException e){
-                System.out.println("Sensor error: No tasks added. Last task added {"+ currentTask.getId() +"}");
+                Thread.currentThread().interrupt();
+                System.out.println("Sensor error: No more tasks to be added. Last task added {"+ currentTask.getId() +"}");
             }
         }
         currentTask = new Task(newComplexity());
-
     }
 
     // Poisson method based on Donald E. Knuth's Algorithm, full reference in report
@@ -72,5 +75,17 @@ public class Sensor implements Runnable {
         double c = minComplexity + (random.nextDouble() * (maxComplexity - minComplexity));
 
         return c;
+    }
+
+    public int getSensorId(){
+        return sensorId;
+    }
+    
+    public void resetSensorId(){
+        sensorID.set(0);
+    }
+
+    public int getLastTaskSent(){
+        return currentTask.getId();
     }
 }
