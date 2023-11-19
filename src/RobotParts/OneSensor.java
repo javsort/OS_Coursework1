@@ -51,7 +51,7 @@ public class OneSensor implements Workflow {
         analysisThread.start();
         actuatorThread.start();
 
-        try {Thread.sleep(10000);
+        try {Thread.sleep(30000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

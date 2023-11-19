@@ -41,7 +41,10 @@ public class Sensor implements Runnable {
 
                     taskQueue.put(currentTask, getSectorName(), lastTaskId);
 
-                    lastTaskId = currentTask.getId();
+                    if(currentTask.getId() > lastTaskId){
+                        lastTaskId = currentTask.getId();
+                    }
+                    
                 }
                 
                 Thread.sleep(1000);
@@ -86,7 +89,7 @@ public class Sensor implements Runnable {
     }
 
     public int getLastTaskSent(){
-        return currentTask.getId();
+        return lastTaskId;
     }
     
     public String getSectorName(){
