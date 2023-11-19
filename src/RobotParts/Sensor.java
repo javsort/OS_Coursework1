@@ -15,6 +15,7 @@ public class Sensor implements Runnable {
 
     Task currentTask;
     static int lastTaskId = 0;
+    static int lastTaskProduced = 0;
 
     private UpgradedQueue<Task> taskQueue;
 
@@ -41,9 +42,11 @@ public class Sensor implements Runnable {
 
                     taskQueue.put(currentTask, getSectorName(), lastTaskId);
 
-                    if(currentTask.getId() > lastTaskId){
-                        lastTaskId = currentTask.getId();
+                    if(currentTask.getId() > lastTaskProduced){
+                        lastTaskProduced = currentTask.getId();
                     }
+
+                    lastTaskId = currentTask.getId();
                     
                 }
                 
