@@ -67,7 +67,7 @@ public class MultipleSensors implements Workflow {
         stopSensors();
         joinSensors();
 
-        while(Sensor.lastTaskProduced != Actuator.lastTaskProcessed){
+        while(Sensor.lastTaskProduced != Actuator.lastTaskProcessed && Sensor.lastTaskProduced != Analysis.lastTaskSent){
             try {Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
