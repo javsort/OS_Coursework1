@@ -5,6 +5,7 @@ import java.lang.Math;
 // Expected output: result
 public class Analysis implements Runnable {
     Task currentTask;
+    int lastTaskId = 0;
 
     private UpgradedQueue<Task> taskQueue;
     private UpgradedQueue<Task> resultsQueue;
@@ -19,18 +20,20 @@ public class Analysis implements Runnable {
         System.out.println("Analysis started");
         while(!Thread.currentThread().isInterrupted()){
             try {
-                currentTask = taskQueue.take();
+                currentTask = taskQueue.take(getSectorName(), lastTaskId);
                 
                 currentTask.setYResult(analysisY(currentTask.getComplexity()));
 
                 int sleepTime = (int) (currentTask.getComplexity() * 1000);
                 Thread.sleep(sleepTime);
 
-                resultsQueue.put(currentTask);
+                lastTaskId = currentTask.getId();
+
+                resultsQueue.put(currentTask, getSectorName(), lastTaskId);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Analysis error: no tasks to analyse. Last task analysed {"+ currentTask.getId() +"} ");
+                System.out.println("Analysis error: no more tasks to analyse. Last task analysed {"+ lastTaskId +"} ");
             }
         }
 
@@ -45,5 +48,9 @@ public class Analysis implements Runnable {
 
     public int getLastTaskSent(){
         return currentTask.getId();
+    }
+
+    public String getSectorName(){
+        return "Analysis";
     }
 }

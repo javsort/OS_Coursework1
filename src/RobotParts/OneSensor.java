@@ -23,8 +23,8 @@ public class OneSensor implements Workflow {
     Thread analysisThread;
     Thread actuatorThread;
 
-    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(1000);
-    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(1000);
+    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(100, "Task Queue");
+    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(100, "Results Queue");
     
     @Override
     public String name() {
@@ -80,15 +80,6 @@ public class OneSensor implements Workflow {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-        /*while(true){
-            try {Thread.sleep(1000);} catch (InterruptedException e) {}
-            if(lastTask == actuator.getLastTaskSent()){
-                analysisThread.interrupt();
-                actuatorThread.interrupt();
-                break;
-            }
-        }*/
 
         System.out.println("\nRobot has stopped moving at: " + actuator.getPosition());
 

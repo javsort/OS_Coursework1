@@ -7,14 +7,16 @@ public class UpgradedQueue<T> {
 
     private Queue<Task> queue = new LinkedList<>();
     private int limit;
+    private String queueName;
 
-    public UpgradedQueue(int limit){
+    public UpgradedQueue(int limit, String name){
         this.limit = limit;
+        this.queueName = name;
     }
 
-    public synchronized void put(Task t) throws InterruptedException {
+    public synchronized void put(Task t, String sectorName, int lastTask) throws InterruptedException {
         while(queue.size() == limit){
-            System.out.println("Queue is full!!!");
+            System.out.println(sectorName + " error: "+ queueName + " is full. Last task added {"+ lastTask +"}");
             wait();
         }
 
@@ -22,8 +24,9 @@ public class UpgradedQueue<T> {
         notify();
     }
 
-    public synchronized Task take() throws InterruptedException {
+    public synchronized Task take(String sectorName, int lastTask) throws InterruptedException {
         while(queue.isEmpty()){
+            System.out.println(sectorName + " error: " + queueName + " is empty. Last task processed {"+ lastTask +"}");
             wait();
         }
         Task requestedTask = queue.poll();

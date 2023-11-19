@@ -10,6 +10,8 @@ public class Actuator implements Runnable {
     private int selectedOption;
 
     Task currentTask;
+    int lastTaskId = 0;
+
     UpgradedQueue<Task> resultsQueue;
 
     public Actuator(UpgradedQueue<Task> resultsQueue, double position, int selectedOption){
@@ -23,17 +25,19 @@ public class Actuator implements Runnable {
         System.out.println("Actuator started");
         while(!Thread.currentThread().isInterrupted()){
             try {
-                currentTask = resultsQueue.take();
+                currentTask = resultsQueue.take(getSectorName(), lastTaskId);
 
                 Move(currentTask.getYResult());
 
                 switch (selectedOption) {
                     case 1:
                         System.out.println("Robot moving. Task id {" + currentTask.getId() + "}, result {" + currentTask.getYResult() + "}, old position: {" + prevPosition + "}, new position: {" + position + "}.");
+                        lastTaskId = currentTask.getId();
                         break;
 
                     case 2:
                         System.out.println("Robot moving. Task id {" + currentTask.getId() + "}, from sensor {" + currentTask.getSensorId() + "}, result {" + currentTask.getYResult() + "}, old position: {" + prevPosition + "}, new position: {" + position + "}.");
+                        lastTaskId = currentTask.getId();
                         break;
                     
                     default:
@@ -42,7 +46,7 @@ public class Actuator implements Runnable {
             
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Actuate error: no results to process. Last task processed {"+ currentTask.getId() +"}");
+                System.out.println("Actuate error: no more results to process. Last task processed {"+ lastTaskId +"}");
             }
         }
     }
@@ -55,13 +59,12 @@ public class Actuator implements Runnable {
         // Check if the position is out of bounds
         while (position > maxPosition || position < minPosition) {
             if (position > maxPosition) {
-
                 double remaining = (position - maxPosition) * direction;
                 position = maxPosition;
                 direction = -1.0;
                 position += remaining * direction;
-            } else if (position < minPosition) {
 
+            } else if (position < minPosition) {
                 double remaining = (-position) * direction;
                 position = minPosition;
                 direction = 1.0;
@@ -77,4 +80,9 @@ public class Actuator implements Runnable {
     public int getLastTaskSent(){
         return currentTask.getId();
     }
+
+    public String getSectorName(){
+        return "Actuator";
+    }
+
 }

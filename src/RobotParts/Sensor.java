@@ -14,6 +14,8 @@ public class Sensor implements Runnable {
     
 
     Task currentTask;
+    int lastTaskId = 0;
+
     private UpgradedQueue<Task> taskQueue;
 
 
@@ -32,24 +34,20 @@ public class Sensor implements Runnable {
             try {
 
                 for(int i = 0; i < getPoissonNum(lambda); i++){
-
-                    if(taskQueue.isFull()){
-                        System.out.println("Sensor "+ sensorId + " error: Task queue is full. Last task added {"+ currentTask.getId() +"}");
-                        continue;
-                    }
-
                     double complexity = newComplexity();
                     currentTask = new Task(complexity);
                     currentTask.setSensorId(sensorId);
-                    taskQueue.put(currentTask);
 
+                    taskQueue.put(currentTask, getSectorName(), lastTaskId);
+
+                    lastTaskId = currentTask.getId();
                 }
                 
                 Thread.sleep(1000);
 
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
-                System.out.println("Sensor "+ sensorId + " error: No more tasks to be added. Last task added {"+ currentTask.getId() +"}");
+                System.out.println("Sensor "+ sensorId + " error: No more tasks to be added. Last task added {"+ lastTaskId +"}");
             }
         }
         currentTask = new Task(newComplexity());
@@ -88,5 +86,9 @@ public class Sensor implements Runnable {
 
     public int getLastTaskSent(){
         return currentTask.getId();
+    }
+    
+    public String getSectorName(){
+        return "Sensor "+ sensorId;
     }
 }

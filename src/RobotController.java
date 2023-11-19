@@ -57,7 +57,6 @@ public class RobotController {
 
             System.out.println("Robot is: " + robot.workflow.name());
             robot.workflow.init();
-            
             robot.workflow.go();
         }
     }

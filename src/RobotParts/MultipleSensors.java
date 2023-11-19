@@ -26,8 +26,8 @@ public class MultipleSensors implements Workflow {
     ArrayList<Sensor> sensors = new ArrayList<>();
     ArrayList<Thread> sensorsThreads = new ArrayList<>();
 
-    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(1000);
-    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(1000);
+    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(100, "Task Queue");
+    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(100, "Results Queue");
     
     @Override
     public String name() {
