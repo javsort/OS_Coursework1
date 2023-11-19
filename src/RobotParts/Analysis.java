@@ -5,7 +5,8 @@ import java.lang.Math;
 // Expected output: result
 public class Analysis implements Runnable {
     Task currentTask;
-    int lastTaskId = 0;
+    int lastTaskId;
+    static int lastTaskSent;
 
     private UpgradedQueue<Task> taskQueue;
     private UpgradedQueue<Task> resultsQueue;
@@ -17,6 +18,9 @@ public class Analysis implements Runnable {
 
     @Override
     public void run(){
+        lastTaskId = 0;
+        lastTaskSent = 0;
+
         System.out.println("Analysis started");
         while(!Thread.currentThread().isInterrupted()){
             try {
@@ -28,6 +32,10 @@ public class Analysis implements Runnable {
                 Thread.sleep(sleepTime);
 
                 lastTaskId = currentTask.getId();
+
+                if(currentTask.getId() > lastTaskSent){
+                    lastTaskSent = currentTask.getId();
+                }
 
                 resultsQueue.put(currentTask, getSectorName(), lastTaskId);
 
