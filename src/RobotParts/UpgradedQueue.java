@@ -16,7 +16,7 @@ public class UpgradedQueue<T> {
 
     public synchronized void put(Task t, String sectorName, int lastTask) throws InterruptedException {
         while(queue.size() == limit){
-            System.out.println(sectorName + " error: "+ queueName + " is full. Last task added {"+ lastTask +"}");
+            System.out.println(sectorName + " error: "+ queueName + " is full. Last task added {"+ lastTask +"}.");
             wait();
         }
 
@@ -26,7 +26,7 @@ public class UpgradedQueue<T> {
 
     public synchronized Task take(String sectorName, int lastTask) throws InterruptedException {
         while(queue.isEmpty()){
-            System.out.println(sectorName + " error: " + queueName + " is empty. Last task processed {"+ lastTask +"}");
+            System.out.println(sectorName + " error: " + queueName + " is empty. Last task processed {"+ lastTask +"}.");
             wait();
         }
         Task requestedTask = queue.poll();

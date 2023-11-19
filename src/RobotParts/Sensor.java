@@ -14,8 +14,8 @@ public class Sensor implements Runnable {
     
 
     Task currentTask;
-    static int lastTaskId = 0;
-    static int lastTaskProduced = 0;
+    static int lastTaskId;
+    static int lastTaskProduced;
 
     private UpgradedQueue<Task> taskQueue;
 
@@ -31,6 +31,7 @@ public class Sensor implements Runnable {
         System.out.println("Sensor "+ sensorId +" started");
         Task.resetId();
         lastTaskId = 0;
+        lastTaskProduced = 0;
 
         while(!Thread.currentThread().isInterrupted()){
             try {
@@ -54,7 +55,7 @@ public class Sensor implements Runnable {
 
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
-                System.out.println("Sensor "+ sensorId + " error: No more tasks to be added. Last task added {"+ lastTaskId +"}");
+                System.out.println("Sensor "+ sensorId + " error: No more tasks to be added. Last task added {"+ lastTaskProduced +"}.");
             }
         }
         currentTask = new Task(newComplexity());

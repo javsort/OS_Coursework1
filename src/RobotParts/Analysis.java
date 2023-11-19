@@ -33,7 +33,7 @@ public class Analysis implements Runnable {
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Analysis error: no more tasks to analyse. Last task analysed {"+ lastTaskId +"} ");
+                System.out.println("Analysis error: no more tasks to analyse. Last task analysed {"+ lastTaskId +"}.");
             }
         }
 

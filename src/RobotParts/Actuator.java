@@ -10,7 +10,8 @@ public class Actuator implements Runnable {
     private int selectedOption;
 
     Task currentTask;
-    static int lastTaskId = 0;
+    static int lastTaskId;
+    static int lastTaskProcessed;
 
     UpgradedQueue<Task> resultsQueue;
 
@@ -34,11 +35,19 @@ public class Actuator implements Runnable {
                     case 1:
                         System.out.println("Robot moving. Task id {" + currentTask.getId() + "}, result {" + currentTask.getYResult() + "}, old position: {" + prevPosition + "}, new position: {" + position + "}.");
                         lastTaskId = currentTask.getId();
+                        if(currentTask.getId() > lastTaskProcessed){
+                            lastTaskProcessed = currentTask.getId();
+                        }
+                        
                         break;
 
                     case 2:
                         System.out.println("Robot moving. Task id {" + currentTask.getId() + "}, from sensor {" + currentTask.getSensorId() + "}, result {" + currentTask.getYResult() + "}, old position: {" + prevPosition + "}, new position: {" + position + "}.");
                         lastTaskId = currentTask.getId();
+                        if(currentTask.getId() > lastTaskProcessed){
+                            lastTaskProcessed = currentTask.getId();
+                        }
+                        
                         break;
                     
                     default:
@@ -47,7 +56,7 @@ public class Actuator implements Runnable {
             
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Actuate error: no more results to process. Last task processed {"+ lastTaskId +"}");
+                System.out.println("Actuator error: no more results to process. Last task processed {"+ lastTaskId +"}.");
             }
         }
     }

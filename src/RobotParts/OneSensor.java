@@ -64,7 +64,7 @@ public class OneSensor implements Workflow {
             Thread.currentThread().interrupt();
         }
 
-        while(Sensor.lastTaskProduced != Actuator.lastTaskId){
+        while(Sensor.lastTaskProduced != Actuator.lastTaskProcessed){
             try {Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
