@@ -10,7 +10,7 @@ public class Actuator implements Runnable {
     private int selectedOption;
 
     Task currentTask;
-    int lastTaskId = 0;
+    static int lastTaskId = 0;
 
     UpgradedQueue<Task> resultsQueue;
 
@@ -22,6 +22,7 @@ public class Actuator implements Runnable {
     
     @Override
     public void run(){
+        lastTaskId = 0;
         System.out.println("Actuator started");
         while(!Thread.currentThread().isInterrupted()){
             try {

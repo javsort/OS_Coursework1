@@ -14,7 +14,7 @@ public class Sensor implements Runnable {
     
 
     Task currentTask;
-    int lastTaskId = 0;
+    static int lastTaskId = 0;
 
     private UpgradedQueue<Task> taskQueue;
 
@@ -29,6 +29,7 @@ public class Sensor implements Runnable {
     public void run(){
         System.out.println("Sensor "+ sensorId +" started");
         Task.resetId();
+        lastTaskId = 0;
 
         while(!Thread.currentThread().isInterrupted()){
             try {
