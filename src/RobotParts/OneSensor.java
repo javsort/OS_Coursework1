@@ -9,6 +9,7 @@ import src.Workflow;
 public class OneSensor implements Workflow {
     public double lambda = 0;
     public double position = -1.0;
+    public int queueSize = 1000;
 
     public int lastTask;
     
@@ -23,8 +24,8 @@ public class OneSensor implements Workflow {
     Thread analysisThread;
     Thread actuatorThread;
 
-    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(100, "Task Queue");
-    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(100, "Results Queue");
+    UpgradedQueue<Task> taskQueue = new UpgradedQueue<>(queueSize, "Task Queue");
+    UpgradedQueue<Task> resultsQueue = new UpgradedQueue<>(queueSize, "Results Queue");
     
     @Override
     public String name() {
