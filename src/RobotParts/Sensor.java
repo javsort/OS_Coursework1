@@ -87,16 +87,16 @@ public class Sensor implements Runnable {
 
     // Poisson method based on Donald E. Knuth's Algorithm, full reference and explanation in report
     public int getPoissonNum(double lambda){
-        double L = Math.exp(-lambda);
-        double p = 1.0;
-        int k = 0;
+        double end = Math.exp(-lambda);
+        double modifier = 1.0;
+        int events = 0;
 
         do {
-            k++;
-            p *= Math.random();
-        } while (p > L);
+            events++;
+            modifier *= Math.random();
+        } while (modifier > end);
         
-        return k - 1;
+        return events - 1;
     }
 
     // Method to generate a new complexity for the task
